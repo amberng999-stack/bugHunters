@@ -284,6 +284,53 @@ function bindEvents() {
     dom.btnDismiss.addEventListener('click', handleDismiss);
     dom.btnWarn.addEventListener('click', handleWarn);
     dom.btnBlock.addEventListener('click', handleBlock);
+
+    // ── Sidebar Navigation Click Handlers ──
+    const navItems = document.querySelectorAll('#sidebar-nav .nav-item');
+    navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            navItems.forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            const navTarget = item.getAttribute('data-nav');
+            if (navTarget === 'overview') {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                dom.filterSelect.value = 'all';
+                renderTable();
+            } else if (navTarget === 'departments') {
+                const deptCard = document.querySelector('.chart-card');
+                if (deptCard) deptCard.scrollIntoView({ behavior: 'smooth' });
+            } else if (navTarget === 'worker-monitor') {
+                const workerCard = document.querySelector('.worker-card');
+                if (workerCard) workerCard.scrollIntoView({ behavior: 'smooth' });
+                dom.filterSelect.value = 'all';
+                renderTable();
+            } else if (navTarget === 'blocked-uploads') {
+                const workerCard = document.querySelector('.worker-card');
+                if (workerCard) workerCard.scrollIntoView({ behavior: 'smooth' });
+                dom.filterSelect.value = 'high';
+                renderTable();
+                addLog("Filtered view: Showing blocked confidential upload attempts.", "system");
+            } else if (navTarget === 'policies') {
+                openPoliciesModal();
+            }
+        });
+    });
+
+    // ── Policies Modal Close Listeners ──
+    const btnClosePolicies = $('btn-close-policies-modal');
+    const btnClosePoliciesFooter = $('btn-close-policies-footer');
+    if (btnClosePolicies) btnClosePolicies.addEventListener('click', closePoliciesModal);
+    if (btnClosePoliciesFooter) btnClosePoliciesFooter.addEventListener('click', closePoliciesModal);
+
+    // ── Agent Tester Modal Listeners ──
+    const btnCloseAgent = $('btn-close-agent-modal');
+    const btnCancelAgent = $('btn-cancel-agent');
+    const btnRunScan = $('btn-run-agent-scan');
+    if (btnCloseAgent) btnCloseAgent.addEventListener('click', closeAgentModal);
+    if (btnCancelAgent) btnCancelAgent.addEventListener('click', closeAgentModal);
+    if (btnRunScan) btnRunScan.addEventListener('click', runAgentPreUploadScan);
 }
 
 // ─────────────────────────────────────────────────────────────────────
@@ -819,4 +866,120 @@ async function autoDetectClientIP() {
     } catch (e) {
         // Silently fallback if offline
     }
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// POLICIES & AGENT TESTER MODALS
+// ─────────────────────────────────────────────────────────────────────
+function openPoliciesModal() {
+    const pModal = $('policies-modal');
+    if (pModal) {
+        pModal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+}
+
+function closePoliciesModal() {
+    const pModal = $('policies-modal');
+    if (pModal) pModal.classList.add('hidden');
+}
+
+function openAgentModal() {
+    const aModal = $('agent-tester-modal');
+    const ipInput = $('agent-ip-input');
+    if (ipInput) ipInput.value = MY_TEST_IP || '10.0.12.99';
+    if (aModal) {
+        aModal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+}
+
+function closeAgentModal() {
+    const aModal = $('agent-tester-modal');
+    if (aModal) aModal.classList.add('hidden');
+}
+
+function runAgentPreUploadScan() {
+    const toolVal = $('agent-tool-select').value;
+    const fileVal = $('agent-file-select').value;
+
+    const [toolName, toolStatus] = toolVal.split('|');
+    const [fileName, fileDataFound, fileType] = fileVal.split('|');
+
+    const isToolApproved = toolStatus === 'approved';
+    const isConfidential = fileDataFound !== 'Safe Public Content';
+
+    const resultBox = $('agent-scan-result');
+    const resultTitle = $('agent-result-title');
+    const resultDesc = $('agent-result-desc');
+
+    const ip = MY_TEST_IP || '10.0.12.99';
+
+    if (!isToolApproved || isConfidential) {
+        // Pre-Upload Interception Triggered (0 Bytes Sent)
+        resultBox.className = 'dept-placeholder threat-active';
+        resultBox.style.border = '1px solid rgba(255,51,102,0.4)';
+        resultBox.style.background = 'rgba(255,51,102,0.1)';
+        resultTitle.style.color = '#ff3366';
+        resultTitle.innerText = '🚫 PRE-UPLOAD INTERCEPTED (0 Bytes Sent to AI)';
+        resultDesc.innerText = `Endpoint Agent AI blocked ${fileName} before transmission to ${toolName}. Reason: ${!isToolApproved ? 'Unapproved Shadow AI Tool' : 'Confidential Data Detected'}.`;
+
+        const newWorker = {
+            id: 'agent-' + Date.now(),
+            name: "Agent Scan (IP: " + ip + ")",
+            dept: "Engineering",
+            tool: toolName,
+            toolApproved: isToolApproved,
+            file: fileName,
+            uploadStatus: "Blocked — Confidential",
+            riskLevel: "high",
+            riskScore: 94,
+            ip: ip,
+            date: nowTimestamp(),
+            fileType: fileType,
+            dataFound: [fileDataFound]
+        };
+
+        workers.unshift(newWorker);
+        totalBlocked++;
+        if (departments["Engineering"]) {
+            departments["Engineering"].blocked++;
+            departments["Engineering"].alerts++;
+            departments["Engineering"].risk = "High Risk";
+            departments["Engineering"].riskClass = "badge-danger";
+        }
+
+        addLog(`[PRE-UPLOAD BLOCK] Endpoint Agent AI blocked <strong>${fileName}</strong> on <strong>${toolName}</strong> at workstation IP ${ip}. 0 Bytes sent to AI.`, "threat");
+    } else {
+        // Allowed Upload
+        resultBox.className = 'dept-placeholder';
+        resultBox.style.border = '1px solid rgba(16,185,129,0.4)';
+        resultBox.style.background = 'rgba(16,185,129,0.1)';
+        resultTitle.style.color = '#10b981';
+        resultTitle.innerText = '🟢 PRE-UPLOAD CLEARED (Upload Allowed)';
+        resultDesc.innerText = `Endpoint Agent AI inspected ${fileName} for ${toolName}. Content is safe and tool is approved by company policy.`;
+
+        const newWorker = {
+            id: 'agent-' + Date.now(),
+            name: "Agent Scan (IP: " + ip + ")",
+            dept: "Engineering",
+            tool: toolName,
+            toolApproved: true,
+            file: fileName,
+            uploadStatus: "Allowed",
+            riskLevel: "low",
+            riskScore: 8,
+            ip: ip,
+            date: nowTimestamp(),
+            fileType: fileType,
+            dataFound: ["No confidential content detected"]
+        };
+
+        workers.unshift(newWorker);
+        addLog(`[ALLOWED] Endpoint Agent AI cleared upload of ${fileName} to ${toolName}.`, "approved");
+    }
+
+    resultBox.classList.remove('hidden');
+    renderTable();
+    updateCounters();
 }

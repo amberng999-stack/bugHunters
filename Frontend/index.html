@@ -28,26 +28,26 @@
                 <span class="logo-text">Bug<span>Hunters</span></span>
             </div>
 
-            <nav class="sidebar-nav">
-                <a href="#" class="nav-item active">
+            <nav class="sidebar-nav" id="sidebar-nav">
+                <a href="#" class="nav-item active" data-nav="overview">
                     <i data-lucide="layout-dashboard"></i>
                     <span>Overview</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-nav="departments">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Departments</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-nav="worker-monitor">
                     <i data-lucide="users"></i>
                     <span>Worker Monitor</span>
                     <span class="badge badge-danger sidebar-alert-count hidden" id="sidebar-badge">0</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-nav="blocked-uploads">
                     <i data-lucide="file-x"></i>
                     <span>Blocked Uploads</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i data-lucide="settings"></i>
+                <a href="#" class="nav-item" data-nav="policies">
+                    <i data-lucide="shield"></i>
                     <span>Policies</span>
                 </a>
             </nav>
@@ -366,6 +366,110 @@
                 <button class="btn btn-outline" id="btn-modal-dismiss">Dismiss Alert</button>
                 <button class="btn btn-warning" id="btn-modal-warn">Send Warning to Worker</button>
                 <button class="btn btn-danger" id="btn-modal-block">Restrict Worker Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company AI Security Policies Modal -->
+    <div class="modal-overlay hidden" id="policies-modal">
+        <div class="modal-card" style="max-width:640px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="shield-check" class="text-primary"></i>
+                    <h2>Enterprise AI Security Policies & Governance</h2>
+                </div>
+                <button class="btn-close-modal" id="btn-close-policies-modal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" style="gap:16px;">
+                <div class="policy-note" style="background:rgba(0,240,255,0.05);border-color:rgba(0,240,255,0.2);">
+                    <strong>Case Study 3 Compliance Framework:</strong>
+                    <p style="margin-top:4px;color:var(--muted);font-size:0.8rem;">Endpoint Agent AI intercepts files <strong>BEFORE transmission (0 Bytes sent)</strong> when unapproved AI tools or confidential data categories are detected.</p>
+                </div>
+
+                <div class="detected-content-card">
+                    <h4><i data-lucide="check-circle" style="color:var(--green)"></i> Whitelisted Approved AI Tools:</h4>
+                    <div class="detected-tags">
+                        <span class="detected-tag" style="color:var(--green);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">GitHub Copilot (Enterprise)</span>
+                        <span class="detected-tag" style="color:var(--green);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">ChatGPT Enterprise (Corporate)</span>
+                        <span class="detected-tag" style="color:var(--green);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">Claude Team (Whitelisted)</span>
+                        <span class="detected-tag" style="color:var(--green);border-color:rgba(16,185,129,0.3);background:rgba(16,185,129,0.1)">Midjourney (Marketing Approved)</span>
+                    </div>
+                </div>
+
+                <div class="detected-content-card">
+                    <h4><i data-lucide="shield-alert" style="color:#ff3366"></i> Restricted Data Categories (Pre-Upload Blocking):</h4>
+                    <ul style="font-size:0.82rem;color:var(--muted);margin-left:18px;display:flex;flex-direction:column;gap:6px;">
+                        <li><strong>PII & Employee Data:</strong> Personal IC numbers, salary matrices, HR review records.</li>
+                        <li><strong>Financial Intelligence:</strong> Unreleased quarterly reports, revenue forecasts, banking info.</li>
+                        <li><strong>Proprietary IP:</strong> Source code repositories (`.zip`, `.js`, `.py`), API secret keys, database URIs.</li>
+                        <li><strong>Customer Records:</strong> Client CRM lists, deal valuations, contact databases.</li>
+                    </ul>
+                </div>
+
+                <div class="blocked-banner" style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.25);">
+                    <i data-lucide="shield-ban" style="color:#f59e0b;"></i>
+                    <div>
+                        <h3 style="color:#fff;font-size:0.9rem;">Automatic Pre-Upload Interception</h3>
+                        <p style="font-size:0.78rem;color:var(--muted);">Shadow AI (e.g., Phind, ChatPDF, Writesonic, PromptBase) is automatically blocked upon attempt.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btn-close-policies-footer">Close Policy Viewer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Endpoint Agent Tester Simulation Modal -->
+    <div class="modal-overlay hidden" id="agent-tester-modal">
+        <div class="modal-card" style="max-width:580px;">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i data-lucide="cpu" class="text-primary"></i>
+                    <h2>Endpoint Agent AI — Pre-Upload Scanner</h2>
+                </div>
+                <button class="btn-close-modal" id="btn-close-agent-modal"><i data-lucide="x"></i></button>
+            </div>
+            <div class="modal-body" style="gap:16px;">
+                <p style="font-size:0.82rem;color:var(--muted)">Test the Endpoint Agent AI scanning a workstation attempt before transmission.</p>
+
+                <div class="modal-details-grid" style="grid-template-columns:1fr;">
+                    <div class="modal-detail-item">
+                        <label>Detected Workstation IP</label>
+                        <input type="text" id="agent-ip-input" readonly style="background:#06090e;border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:#00f0ff;font-family:var(--mono);font-size:0.85rem;" value="Auto-detecting IP...">
+                    </div>
+                    <div class="modal-detail-item">
+                        <label>Target AI Application / Website</label>
+                        <select id="agent-tool-select" style="background:#06090e;border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);font-size:0.85rem;">
+                            <option value="Phind.com|unapproved">Phind.com (Unapproved Shadow AI)</option>
+                            <option value="ChatPDF.com|unapproved">ChatPDF.com (Unapproved Shadow AI)</option>
+                            <option value="Writesonic.com|unapproved">Writesonic.com (Unapproved Shadow AI)</option>
+                            <option value="ChatGPT Enterprise|approved">ChatGPT Enterprise (Whitelisted Approved AI)</option>
+                            <option value="GitHub Copilot|approved">GitHub Copilot (Whitelisted Approved AI)</option>
+                        </select>
+                    </div>
+                    <div class="modal-detail-item">
+                        <label>File Selected for Upload</label>
+                        <select id="agent-file-select" style="background:#06090e;border:1px solid var(--border);padding:8px 12px;border-radius:6px;color:var(--text);font-size:0.85rem;">
+                            <option value="employee_salary_matrix_2026.xlsx|Confidential Salary Data & PII|Spreadsheet (.xlsx)">employee_salary_matrix_2026.xlsx (Sensitive: Financials/PII)</option>
+                            <option value="auth_service_src.zip|Proprietary Source Code & Secrets|Archive (.zip)">auth_service_src.zip (Sensitive: Source Code & Secret Keys)</option>
+                            <option value="performance_reviews_Q2.docx|HR Performance Ratings|Document (.docx)">performance_reviews_Q2.docx (Sensitive: HR Records)</option>
+                            <option value="project_proposal.pdf|Safe Public Content|Document (.pdf)">project_proposal.pdf (Safe: General Document)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="agent-scan-result" class="dept-placeholder hidden" style="padding:12px;margin-top:4px;">
+                    <h4 id="agent-result-title" style="font-size:0.95rem;">-</h4>
+                    <p id="agent-result-desc" style="font-size:0.8rem;margin-top:4px;">-</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" id="btn-cancel-agent">Cancel</button>
+                <button class="btn btn-primary" id="btn-run-agent-scan" style="background:linear-gradient(135deg,#00f0ff,#3b82f6);color:#06090e;font-weight:700;">
+                    <i data-lucide="scan"></i>
+                    <span>Execute Pre-Upload Inspection</span>
+                </button>
             </div>
         </div>
     </div>

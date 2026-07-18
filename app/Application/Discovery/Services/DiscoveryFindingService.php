@@ -4,6 +4,8 @@ namespace App\Application\Discovery\Services;
 
 use App\Domain\Discovery\Repositories\DiscoveryRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\ValidationException;
 
 /** Creates, assigns, and resolves normalized discovery findings. */
@@ -26,8 +28,7 @@ final readonly class DiscoveryFindingService
             throw ValidationException::withMessages(['resolution_code' => ['A resolution code is required.']]);
         }
 
-        $finding = $this->discovery->findOrFail($findingId);
-        abort_unless($finding->getAttribute('organization_id') === $organizationId, 404);
+        $finding = $this->get($organizationId, $findingId);
 
         return $this->discovery->update($finding, [
             'status' => 'resolved',
@@ -37,5 +38,20 @@ final readonly class DiscoveryFindingService
             'resolution_notes' => $notes,
         ]);
     }
-}
 
+    public function get(string $organizationId, string $findingId): Model
+    {
+        return $this->discovery->findFindingForOrganization($organizationId, $findingId)
+            ?? throw (new ModelNotFoundException)->setModel('DiscoveryFinding', [$findingId]);
+    }
+
+    public function list(string $organizationId, array $filters = [], int $perPage = 25): LengthAwarePaginator
+    {
+        return $this->discovery->paginateFindings($organizationId, $filters, $perPage);
+    }
+
+    public function changeStatus(string $organizationId, string $findingId, string $status): Model
+    {
+        return $this->discovery->update($this->get($organizationId, $findingId), ['status' => $status]);
+    }
+}

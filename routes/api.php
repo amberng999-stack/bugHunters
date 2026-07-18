@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\Employees\EmployeeController;
 use App\Http\Controllers\Api\V1\Departments\DepartmentController;
 use App\Http\Controllers\Api\V1\Devices\DeviceController;
 use App\Http\Controllers\Api\V1\AiTools\AiToolController;
+use App\Http\Controllers\Api\V1\Discovery\UnknownAiToolDetectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
@@ -37,4 +38,14 @@ Route::prefix('v1')
         Route::apiResource('ai-tools', AiToolController::class)
             ->parameters(['ai-tools' => 'aiTool'])
             ->whereUuid('aiTool');
+        Route::get('discovery/unknown-tools', [UnknownAiToolDetectionController::class, 'index'])
+            ->name('discovery.unknown-tools.index');
+        Route::post('discovery/unknown-tools', [UnknownAiToolDetectionController::class, 'store'])
+            ->name('discovery.unknown-tools.store');
+        Route::get('discovery/unknown-tools/{finding}', [UnknownAiToolDetectionController::class, 'show'])
+            ->whereUuid('finding')
+            ->name('discovery.unknown-tools.show');
+        Route::patch('discovery/unknown-tools/{finding}/status', [UnknownAiToolDetectionController::class, 'updateStatus'])
+            ->whereUuid('finding')
+            ->name('discovery.unknown-tools.status');
     });

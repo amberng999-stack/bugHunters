@@ -23,6 +23,7 @@ class DiscoveryFinding extends UuidModel
             'organization_ai_tool_id',
             'incident_id',
             'finding_type',
+            'detected_domain',
             'severity',
             'status',
             'title',
@@ -64,4 +65,3 @@ class DiscoveryFinding extends UuidModel
 
     public function events(): HasMany { return $this->hasMany(DiscoveryFindingEvent::class); }
 }
-

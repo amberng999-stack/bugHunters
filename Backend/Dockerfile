@@ -1,15 +1,13 @@
-FROM php:8.3-cli-alpine
+FROM php:8.3-cli
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    sqlite-dev \
+    libsqlite3-dev \
     libpng-dev \
     libxml2-dev \
-    icu-dev \
-    oniguruma-dev
-
-RUN docker-php-ext-install pdo pdo_sqlite mbstring bcmath intl
+    libzip-dev \
+    && docker-php-ext-install pdo pdo_sqlite bcmath
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 

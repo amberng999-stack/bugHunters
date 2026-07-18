@@ -4,6 +4,7 @@ namespace App\Application\Audit\Services;
 
 use App\Domain\Audit\Repositories\AuditLogRepositoryInterface;
 use App\Models\AuditLog;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /** Redacts sensitive values and appends immutable audit records. */
 final readonly class AuditLogService
@@ -26,6 +27,16 @@ final readonly class AuditLogService
         ]);
     }
 
+    public function list(string $organizationId, array $filters, int $perPage): LengthAwarePaginator
+    {
+        return $this->auditLogs->paginate($organizationId, $filters, $perPage);
+    }
+
+    public function get(string $organizationId, string $id): AuditLog
+    {
+        return $this->auditLogs->findForOrganization($organizationId, $id) ?? abort(404);
+    }
+
     private function redact(array $values): array
     {
         foreach ($values as $key => $value) {
@@ -39,4 +50,3 @@ final readonly class AuditLogService
         return $values;
     }
 }
-

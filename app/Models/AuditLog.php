@@ -18,6 +18,7 @@ class AuditLog extends UuidModel
             'actor_type',
             'actor_identifier',
             'action',
+            'module',
             'auditable_type',
             'auditable_id',
             'outcome',
@@ -58,4 +59,3 @@ class AuditLog extends UuidModel
 
     public function auditable(): MorphTo { return $this->morphTo(); }
 }
-

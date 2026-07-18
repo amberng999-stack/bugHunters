@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\V1\Policies\PolicyEvaluationController;
 use App\Http\Controllers\Api\V1\Incidents\IncidentController;
 use App\Http\Controllers\Api\V1\Notifications\NotificationController;
 use App\Http\Controllers\Api\V1\Dashboard\DashboardController;
+use App\Http\Controllers\Api\V1\Audit\AuditLogController;
+use App\Http\Middleware\AuditAdministrativeAction;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
@@ -28,7 +30,7 @@ Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
 
 Route::prefix('v1')
     ->name('api.v1.')
-    ->middleware('auth:sanctum')
+    ->middleware(['auth:sanctum', AuditAdministrativeAction::class])
     ->group(function (): void {
         Route::apiResource('employees', EmployeeController::class)
             ->whereUuid('employee');
@@ -89,4 +91,8 @@ Route::prefix('v1')
             Route::get('incident-trends', [DashboardController::class, 'incidentTrends'])->name('incident-trends');
             Route::get('top-violations', [DashboardController::class, 'topViolations'])->name('top-violations');
         });
+        Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+        Route::get('audit-logs/{auditLog}', [AuditLogController::class, 'show'])
+            ->whereUuid('auditLog')
+            ->name('audit-logs.show');
     });

@@ -14,16 +14,19 @@ final class EloquentAuditLogRepository implements AuditLogRepositoryInterface
         return AuditLog::query()->create($attributes);
     }
 
-    public function find(string $id): ?AuditLog
+    public function findForOrganization(string $organizationId, string $id): ?AuditLog
     {
-        return AuditLog::query()->find($id);
+        return AuditLog::query()
+            ->where('organization_id', $organizationId)
+            ->whereKey($id)
+            ->first();
     }
 
     public function paginate(string $organizationId, array $filters = [], int $perPage = 100): LengthAwarePaginator
     {
         $query = AuditLog::query()->where('organization_id', $organizationId);
 
-        foreach (array_intersect_key($filters, array_flip(['actor_user_id', 'actor_type', 'action', 'auditable_type', 'auditable_id', 'outcome', 'source', 'correlation_id'])) as $column => $value) {
+        foreach (array_intersect_key($filters, array_flip(['actor_user_id', 'actor_type', 'action', 'module', 'auditable_type', 'auditable_id', 'outcome', 'source', 'correlation_id'])) as $column => $value) {
             $query->where($column, $value);
         }
 
@@ -43,4 +46,3 @@ final class EloquentAuditLogRepository implements AuditLogRepositoryInterface
         return AuditLogExport::query()->create($attributes);
     }
 }
-

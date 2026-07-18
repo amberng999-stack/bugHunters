@@ -10,10 +10,9 @@ interface AuditLogRepositoryInterface
 {
     public function append(array $attributes): AuditLog;
 
-    public function find(string $id): ?AuditLog;
+    public function findForOrganization(string $organizationId, string $id): ?AuditLog;
 
     public function paginate(string $organizationId, array $filters = [], int $perPage = 100): LengthAwarePaginator;
 
     public function createExport(array $attributes): AuditLogExport;
 }
-

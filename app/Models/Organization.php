@@ -48,5 +48,6 @@ class Organization extends UuidModel
     public function incidents(): HasMany { return $this->hasMany(Incident::class); }
 
     public function auditLogs(): HasMany { return $this->hasMany(AuditLog::class); }
-}
 
+    public function violationTypes(): HasMany { return $this->hasMany(ViolationType::class); }
+}

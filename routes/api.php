@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\V1\Departments\DepartmentController;
 use App\Http\Controllers\Api\V1\Devices\DeviceController;
 use App\Http\Controllers\Api\V1\AiTools\AiToolController;
 use App\Http\Controllers\Api\V1\Discovery\UnknownAiToolDetectionController;
+use App\Http\Controllers\Api\V1\DataClassification\ClassificationLevelController;
+use App\Http\Controllers\Api\V1\DataClassification\ViolationTypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
@@ -48,4 +50,10 @@ Route::prefix('v1')
         Route::patch('discovery/unknown-tools/{finding}/status', [UnknownAiToolDetectionController::class, 'updateStatus'])
             ->whereUuid('finding')
             ->name('discovery.unknown-tools.status');
+        Route::apiResource('classification-levels', ClassificationLevelController::class)
+            ->parameters(['classification-levels' => 'classificationLevel'])
+            ->whereUuid('classificationLevel');
+        Route::apiResource('violation-types', ViolationTypeController::class)
+            ->parameters(['violation-types' => 'violationType'])
+            ->whereUuid('violationType');
     });

@@ -35,4 +35,6 @@ class Role extends UuidModel
     public function users(): BelongsToMany { return $this->belongsToMany(User::class, 'user_roles')->withPivot(['id', 'organization_id', 'assigned_by', 'expires_at'])->withTimestamps(); }
 
     public function permissions(): BelongsToMany { return $this->belongsToMany(Permission::class, 'role_permissions')->withPivot(['id', 'created_at']); }
+
+    public function policyScopes(): HasMany { return $this->hasMany(PolicyScope::class); }
 }

@@ -23,7 +23,7 @@ final class EloquentEmployeeRepository extends AbstractEloquentRepository implem
     public function findForOrganization(string $organizationId, string $employeeId): ?Employee
     {
         return Employee::query()
-            ->with(['user', 'department', 'managerEmployee'])
+            ->with(['user.roles', 'department', 'managerEmployee'])
             ->where('organization_id', $organizationId)
             ->whereKey($employeeId)
             ->first();

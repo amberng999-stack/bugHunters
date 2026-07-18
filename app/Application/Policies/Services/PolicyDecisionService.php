@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 /** Resolves matched rule effects deterministically and persists the decision with its match evidence. */
 final readonly class PolicyDecisionService
 {
-    private const PRECEDENCE = ['allow' => 1, 'warn' => 2, 'require_approval' => 3, 'block' => 4];
+    private const PRECEDENCE = ['allow' => 1, 'warn' => 2, 'review' => 3, 'block' => 4];
 
     public function __construct(private PolicyRepositoryInterface $policies) {}
 
@@ -60,4 +60,3 @@ final readonly class PolicyDecisionService
         });
     }
 }
-

@@ -21,6 +21,7 @@ class PolicyScope extends UuidModel
             'device_id',
             'organization_ai_tool_id',
             'classification_level_id',
+            'role_id',
             'includes_descendants',
         ];
 
@@ -44,5 +45,6 @@ class PolicyScope extends UuidModel
     public function organizationAiTool(): BelongsTo { return $this->belongsTo(OrganizationAiTool::class, 'organization_ai_tool_id'); }
 
     public function classificationLevel(): BelongsTo { return $this->belongsTo(ClassificationLevel::class, 'classification_level_id'); }
-}
 
+    public function role(): BelongsTo { return $this->belongsTo(Role::class); }
+}

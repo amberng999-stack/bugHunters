@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\V1\AiTools\AiToolController;
 use App\Http\Controllers\Api\V1\Discovery\UnknownAiToolDetectionController;
 use App\Http\Controllers\Api\V1\DataClassification\ClassificationLevelController;
 use App\Http\Controllers\Api\V1\DataClassification\ViolationTypeController;
+use App\Http\Controllers\Api\V1\Policies\PolicyController;
+use App\Http\Controllers\Api\V1\Policies\PolicyEvaluationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
@@ -56,4 +58,11 @@ Route::prefix('v1')
         Route::apiResource('violation-types', ViolationTypeController::class)
             ->parameters(['violation-types' => 'violationType'])
             ->whereUuid('violationType');
+        Route::post('policies/{policy}/publish', [PolicyController::class, 'publish'])
+            ->whereUuid('policy')
+            ->name('policies.publish');
+        Route::apiResource('policies', PolicyController::class)
+            ->whereUuid('policy');
+        Route::post('policy-evaluations', [PolicyEvaluationController::class, 'store'])
+            ->name('policy-evaluations.store');
     });

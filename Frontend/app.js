@@ -1,6 +1,21 @@
 // AegisAI — Core Application Logic
 // System flow: Employee uploads file → background scan → block if confidential → alert manager
 
+// Define the backend URL based on where the frontend is running
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:8000/api' // Your local Laravel server
+    : 'https://bughunters-api.onrender.com/api'; // Replace this with your actual Render URL!
+
+async function fetchBugs() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/bugs`);
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+}
+
 // ─────────────────────────────────────────────────────────────────────
 // DEPARTMENT DATA
 // ─────────────────────────────────────────────────────────────────────

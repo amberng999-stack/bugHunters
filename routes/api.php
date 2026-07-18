@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\DataClassification\ClassificationLevelController
 use App\Http\Controllers\Api\V1\DataClassification\ViolationTypeController;
 use App\Http\Controllers\Api\V1\Policies\PolicyController;
 use App\Http\Controllers\Api\V1\Policies\PolicyEvaluationController;
+use App\Http\Controllers\Api\V1\Incidents\IncidentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1/auth')->name('api.v1.auth.')->group(function (): void {
@@ -65,4 +66,10 @@ Route::prefix('v1')
             ->whereUuid('policy');
         Route::post('policy-evaluations', [PolicyEvaluationController::class, 'store'])
             ->name('policy-evaluations.store');
+        Route::post('incidents/{incident}/transition', [IncidentController::class, 'transition'])
+            ->whereUuid('incident')
+            ->name('incidents.transition');
+        Route::apiResource('incidents', IncidentController::class)
+            ->except('destroy')
+            ->whereUuid('incident');
     });

@@ -51,5 +51,6 @@ class Policy extends UuidModel
     public function scopes(): HasMany { return $this->hasMany(PolicyScope::class); }
 
     public function evaluationMatches(): HasMany { return $this->hasMany(PolicyEvaluationMatch::class); }
-}
 
+    public function incidents(): HasMany { return $this->hasMany(Incident::class); }
+}

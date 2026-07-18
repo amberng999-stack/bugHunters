@@ -28,11 +28,14 @@ class Incident extends UuidModel
             'device_id',
             'organization_ai_tool_id',
             'policy_evaluation_id',
+            'policy_id',
             'discovery_finding_id',
             'assigned_to',
             'assigned_team',
             'reported_by',
             'source',
+            'action',
+            'metadata',
             'risk_score',
             'detected_at',
             'acknowledged_at',
@@ -49,6 +52,7 @@ class Incident extends UuidModel
         return [
             'incident_number' => 'integer',
             'risk_score' => 'decimal:2',
+            'metadata' => 'array',
             'detected_at' => 'datetime',
             'acknowledged_at' => 'datetime',
             'resolved_at' => 'datetime',
@@ -68,6 +72,12 @@ class Incident extends UuidModel
 
     public function policyEvaluation(): BelongsTo { return $this->belongsTo(PolicyEvaluation::class, 'policy_evaluation_id'); }
 
+    public function policy(): BelongsTo { return $this->belongsTo(Policy::class); }
+
+    public function assignee(): BelongsTo { return $this->belongsTo(User::class, 'assigned_to'); }
+
+    public function reporter(): BelongsTo { return $this->belongsTo(User::class, 'reported_by'); }
+
     public function discoveryFinding(): BelongsTo { return $this->belongsTo(DiscoveryFinding::class, 'discovery_finding_id'); }
 
     public function events(): HasMany { return $this->hasMany(IncidentEvent::class); }
@@ -78,4 +88,3 @@ class Incident extends UuidModel
 
     public function notifications(): HasMany { return $this->hasMany(Notification::class); }
 }
-

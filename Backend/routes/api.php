@@ -96,3 +96,98 @@ Route::prefix('v1')
             ->whereUuid('auditLog')
             ->name('audit-logs.show');
     });
+
+Route::get('live-detections', function() {
+    return response()->json([
+        'status' => 'success',
+        'timestamp' => now()->toIso8601String(),
+        'summary' => [
+            'monitored_employees' => 148,
+            'approved_tools' => 7,
+            'blocked_today' => 4,
+            'undefined_alerts' => 6
+        ],
+        'detections' => [
+            [
+                'id' => 'w1', 'name' => 'Clara Ng', 'dept' => 'Engineering',
+                'tool' => 'Phind.com', 'toolApproved' => false,
+                'file' => 'auth_service_src.zip',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 89,
+                'ip' => '10.0.12.55', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Archive (.zip)',
+                'dataFound' => ['Proprietary source code', 'API secret keys']
+            ],
+            [
+                'id' => 'w2', 'name' => 'Brian Tan', 'dept' => 'Finance',
+                'tool' => 'ChatPDF.com', 'toolApproved' => false,
+                'file' => 'employee_salary_matrix_2026.xlsx',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 95,
+                'ip' => '10.0.8.77', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Spreadsheet (.xlsx)',
+                'dataFound' => ['Employee salary data', 'Personal IC numbers']
+            ],
+            [
+                'id' => 'w3', 'name' => 'Priya Nair', 'dept' => 'Human Resources',
+                'tool' => 'Writesonic.com', 'toolApproved' => false,
+                'file' => 'performance_reviews_Q2.docx',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 87,
+                'ip' => '10.0.4.88', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Document (.docx)',
+                'dataFound' => ['Employee performance ratings']
+            ],
+            [
+                'id' => 'w4', 'name' => 'Henry Loh', 'dept' => 'Sales',
+                'tool' => 'AskAI.so', 'toolApproved' => false,
+                'file' => 'client_list_Q3_2026.csv',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 82,
+                'ip' => '10.0.21.99', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'CSV (.csv)',
+                'dataFound' => ['Customer names and contacts']
+            ],
+            [
+                'id' => 'w5', 'name' => 'Marcus Vance', 'dept' => 'Finance',
+                'tool' => 'PDFSummarize.ai', 'toolApproved' => false,
+                'file' => 'Q2_Financial_Report.xlsx',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 91,
+                'ip' => '10.0.8.12', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Spreadsheet (.xlsx)',
+                'dataFound' => ['Revenue figures', 'Unreleased earnings data']
+            ],
+            [
+                'id' => 'w6', 'name' => 'Rachel Lim', 'dept' => 'Marketing',
+                'tool' => 'PromptBase.com', 'toolApproved' => false,
+                'file' => 'brand_guidelines_v3_CONFIDENTIAL.pdf',
+                'uploadStatus' => 'Blocked — Confidential', 'riskLevel' => 'high', 'riskScore' => 78,
+                'ip' => '10.0.15.44', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Document (.pdf)',
+                'dataFound' => ['Confidential brand strategy']
+            ],
+            [
+                'id' => 'w7', 'name' => 'Alexander Wright', 'dept' => 'Engineering',
+                'tool' => 'GitHub Copilot', 'toolApproved' => true,
+                'file' => 'api_routes.js (code refactor)',
+                'uploadStatus' => 'Allowed', 'riskLevel' => 'low', 'riskScore' => 8,
+                'ip' => '10.0.12.34', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Source Code (.js)',
+                'dataFound' => ['No confidential content detected']
+            ],
+            [
+                'id' => 'w8', 'name' => 'Sophia Martinez', 'dept' => 'Marketing',
+                'tool' => 'ChatGPT Enterprise', 'toolApproved' => true,
+                'file' => 'campaign_brief.docx',
+                'uploadStatus' => 'Allowed', 'riskLevel' => 'low', 'riskScore' => 14,
+                'ip' => '10.0.15.89', 'date' => now()->format('d M Y, H:i'),
+                'fileType' => 'Document (.docx)',
+                'dataFound' => ['No confidential content detected']
+            ]
+        ]
+    ]);
+});
+
+Route::get('bugs', function() {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'BugHunters Backend API is online and actively scanning.'
+    ]);
+});
+

@@ -661,10 +661,35 @@ const safeActivities = [
     { dept: "Marketing",      tool: "Midjourney (Approved)",approved: true, file: "ad_banner_prompt.txt",    msg: "[ALLOWED] Marketing upload to Midjourney — safe content." },
 ];
 
+async function fetchBackendDetections() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/live-detections`);
+        if (response.ok) {
+            const data = await response.json();
+            if (data && data.detections && data.detections.length) {
+                data.detections.forEach(item => {
+                    const idx = workers.findIndex(w => w.id === item.id || w.name === item.name);
+                    if (idx !== -1) {
+                        workers[idx] = { ...workers[idx], ...item };
+                    } else {
+                        workers.unshift(item);
+                    }
+                });
+                renderTable();
+                updateCounters();
+            }
+        }
+    } catch (e) {
+        // Fallback to local simulation if offline
+    }
+}
+
 function startSimulation() {
     stopSimulation();
+    fetchBackendDetections();
     simulationInterval = setInterval(() => {
         timeOffset += 5000;
+        fetchBackendDetections();
         const roll = Math.random();
         if (roll > 0.25) {
             simulateSafeUpload();

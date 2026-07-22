@@ -159,10 +159,10 @@ POST   /api/live-detections/action
 
 | Member | Responsibility |
 |---------|----------------|
-| Ng Ying Xi | Team Leader |
-| Team Member | Frontend |
-| Team Member | Backend |
-| Team Member | Documentation |
+| Ng Ying Xi | Team Leader, Backend |
+| Goh Hui Qing | Frontend |
+| Gan Zheng Qing | Backend |
+| Goh Xuan Hui | Full Stack |
 
 ---
 
